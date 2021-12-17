@@ -36,7 +36,6 @@ public class Algorithm {
         Integer node;
         List<Integer> neighbours;
         Integer currentNeighbour;
-        Integer currentDegree;
         Boolean goBack;
         Double currentDensity;
         while(degreeIndex < nodesSortedByDegree.size()){
@@ -51,7 +50,6 @@ public class Algorithm {
 
                 // Search for neighbours
                 neighbours = allEdges.get(node);
-                currentDegree = degreeOfEachNode[node];
                 degreeOfEachNode[node] = 0;
                 // -- degree of each neighbour : remove from its position in degree and put it in the one before
                 // edge cases : if no more edges left for neighbour : remove it too (i.e. if we're in index 0)
@@ -63,7 +61,7 @@ public class Algorithm {
                         --degreeOfEachNode[currentNeighbour];
                         if (degreeOfEachNode[currentNeighbour] > 0) {
                             nodesSortedByDegree.get(degreeOfEachNode[currentNeighbour]).add(currentNeighbour);
-                            if (degreeOfEachNode[currentNeighbour] < currentDegree)
+                            if (degreeOfEachNode[currentNeighbour] < degreeIndex - 1)
                                 goBack = true;
                         }
 
