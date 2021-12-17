@@ -9,6 +9,15 @@ public class Graph {
     public Integer numberOfEdges;
     public Integer numberOfNodes;
     private Double density;
+    public Integer[] degreeOfEachNode;
+
+    Graph(Integer numberOfNodes, Integer numberOfEdges, List<List<Integer>> neighbours, Integer[] degreeOfEachNode){
+        this.numberOfNodes = numberOfNodes;
+        this.numberOfEdges = numberOfEdges;
+        this.neighbours = neighbours;
+        this.degreeOfEachNode = degreeOfEachNode;
+        this.density = computeDensity(numberOfEdges, numberOfNodes);
+    }
 
     Graph(String filePath) throws IOException{
         Integer numberOfEdges = 0;
@@ -38,7 +47,7 @@ public class Graph {
 
         this.numberOfEdges = numberOfEdges;
         this.numberOfNodes = numberOfNodes;
-        this.density = new Double(numberOfEdges) / numberOfNodes;
+        this.density = computeDensity(numberOfEdges, numberOfNodes);
         this.neighbours = neighbours;
     }
 
@@ -47,6 +56,10 @@ public class Graph {
         for(int i = 0; i < line.length; ++i)
             pair[i] = Integer.parseInt(line[i]);
         return pair;
+    }
+
+    private Double computeDensity(Integer numberOfEdges, Integer numberOfNodes){
+        return new Double(numberOfEdges) / numberOfNodes;
     }
 
     public Double getDensity(){return density;}

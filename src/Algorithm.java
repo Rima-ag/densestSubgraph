@@ -38,6 +38,7 @@ public class Algorithm {
         Integer currentNeighbour;
         Integer currentDegree;
         Boolean goBack;
+        Double currentDensity;
         while(degreeIndex < nodesSortedByDegree.size()){
             // Check if graph is complete, if yes stop else:
             if(bestGraph.getDensity() == 2)
@@ -77,8 +78,12 @@ public class Algorithm {
                 ++degreeIndex;
             }
 
-
+            currentDensity = new Double(currentNumberOfEdges) / currentNumberOfNodes;
             // compare densities and update
+            if(currentDensity > bestGraph.getDensity()){
+                bestGraph = new Graph(currentNumberOfNodes, currentNumberOfEdges,
+                        bestGraph.neighbours, degreeOfEachNode);
+            }
         }
     }
 
