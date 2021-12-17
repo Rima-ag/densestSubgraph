@@ -31,16 +31,16 @@ public class Algorithm {
         }
     }
 
-    public void run(){
+    public Graph run(){
         Integer degreeIndex = 0;
         Integer node;
         List<Integer> neighbours;
         Integer currentNeighbour;
         Boolean goBack;
         Double currentDensity;
-        while(degreeIndex < nodesSortedByDegree.size()){
+        while(degreeIndex < nodesSortedByDegree.size() && currentNumberOfNodes > 0){
             // Check if graph is complete, if yes stop else:
-            if(bestGraph.getDensity() == 2)
+            if(bestGraph.getDensity() == bestGraph.numberOfNodes * (bestGraph.numberOfNodes - 1) * 0.5)
                 break;
             // select in node degree list and add it to set
             if(nodesSortedByDegree.get(degreeIndex).size() > 0) {
@@ -59,13 +59,12 @@ public class Algorithm {
                     if (degreeOfEachNode[currentNeighbour] > 0) {
                         nodesSortedByDegree.get(degreeOfEachNode[currentNeighbour]).remove(currentNeighbour);
                         --degreeOfEachNode[currentNeighbour];
+                        --currentNumberOfEdges;
                         if (degreeOfEachNode[currentNeighbour] > 0) {
                             nodesSortedByDegree.get(degreeOfEachNode[currentNeighbour]).add(currentNeighbour);
                             if (degreeOfEachNode[currentNeighbour] < degreeIndex - 1)
                                 goBack = true;
                         }
-
-                        --currentNumberOfEdges;
                     }
                 }
                 if (goBack)
@@ -83,7 +82,19 @@ public class Algorithm {
                         bestGraph.neighbours, degreeOfEachNode);
             }
         }
+        return bestGraph;
     }
 
+    public static void main(String[] args) {
+        Algorithm algo = new Algorithm("large_twitch_edges.csv");
+        Graph bestGraph = algo.run();
+        System.out.println(bestGraph.getDensity());
+        Integer nodes = 0;
+        for(int i = 0; i < bestGraph.degreeOfEachNode.length; ++i){
+            if(bestGraph.degreeOfEachNode[i] != 0)
+                ++nodes;
+        }
+        System.out.println(nodes);
+    }
 
 }

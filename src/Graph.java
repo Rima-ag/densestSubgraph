@@ -27,7 +27,7 @@ public class Graph {
 
         String line = br.readLine();
         if(line != null){
-            Integer[] metaData = convertLineToInteger(line.split("\\s+"));
+            Integer[] metaData = convertLineToInteger(line.split(","));
             numberOfNodes = metaData[0];
             numberOfEdges = metaData[1];
         }
@@ -37,7 +37,7 @@ public class Graph {
             neighbours.add(new ArrayList<>());
 
         while ((line = br.readLine()) != null){
-            Integer[] pair = convertLineToInteger(line.split("\\s+"));
+            Integer[] pair = convertLineToInteger(line.split(","));
             neighbours.get(pair[0]).add(pair[1]);
             neighbours.get(pair[1]).add(pair[0]);
         }
