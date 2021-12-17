@@ -10,12 +10,6 @@ public class Graph {
     public Integer numberOfNodes;
     private Double density;
 
-    Graph(Integer numberOfNodes, Integer numberOfEdges, List<List<Integer>> neighbours){
-        this.numberOfEdges = numberOfEdges;
-        this.numberOfNodes = numberOfNodes;
-        this.neighbours = neighbours;
-    }
-
     Graph(String filePath) throws IOException{
         Integer numberOfEdges = 0;
         Integer numberOfNodes = 0;
