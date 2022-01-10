@@ -19,7 +19,7 @@ public class Graph {
         copyDegreeOfEachNode(degreeOfEachNode);
     }
 
-    Graph(String filePath) throws IOException{
+    Graph(String filePath, String delimiter) throws IOException{
         Integer numberOfEdges = 0;
         Integer numberOfNodes = 0;
         BufferedReader br =
@@ -27,7 +27,7 @@ public class Graph {
 
         String line = br.readLine();
         if(line != null){
-            Integer[] metaData = convertLineToInteger(line.split(","));
+            Integer[] metaData = convertLineToInteger(line.split(delimiter));
             numberOfNodes = metaData[0];
             numberOfEdges = metaData[1];
         }
@@ -37,9 +37,11 @@ public class Graph {
             neighbours.add(new ArrayList<>());
 
         while ((line = br.readLine()) != null){
-            Integer[] pair = convertLineToInteger(line.split(","));
-            neighbours.get(pair[0]).add(pair[1]);
-            neighbours.get(pair[1]).add(pair[0]);
+            Integer[] pair = convertLineToInteger(line.split(delimiter));
+            if(pair.length == 2) {
+                neighbours.get(pair[0]).add(pair[1]);
+                neighbours.get(pair[1]).add(pair[0]);
+            }
         }
 
         this.numberOfEdges = numberOfEdges;

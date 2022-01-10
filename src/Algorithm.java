@@ -10,9 +10,9 @@ public class Algorithm {
     public Integer[] degreeOfEachNode;
     public ArrayList<Node<Integer>> addressOfEachNode;
 
-    Algorithm(String filename){
+    Algorithm(String filename, String delimiter){
         try {
-            bestGraph = new Graph(filename);
+            bestGraph = new Graph(filename, delimiter);
             allEdges = bestGraph.neighbours;
             currentNumberOfEdges = bestGraph.numberOfEdges;
             currentNumberOfNodes = bestGraph.numberOfNodes;
@@ -99,7 +99,7 @@ public class Algorithm {
     }
 
     public static void main(String[] args) {
-        Algorithm algo = new Algorithm("large_twitch_edges.csv");
+        Algorithm algo = new Algorithm("large_twitch_edges.csv", ",");
         Graph bestGraph = algo.run();
         System.out.println(bestGraph.getDensity());
         Integer nodes = 0;
