@@ -16,7 +16,7 @@ public class Algorithm {
             allEdges = bestGraph.neighbours;
             currentNumberOfEdges = bestGraph.numberOfEdges;
             currentNumberOfNodes = bestGraph.numberOfNodes;
-
+            System.out.println(currentNumberOfNodes);
             nodesSortedByDegree = new ArrayList<>();
             degreeOfEachNode = new Integer[currentNumberOfNodes];
             addressOfEachNode = new ArrayList<>(currentNumberOfNodes);
@@ -39,44 +39,50 @@ public class Algorithm {
     }
 
     public Graph run(){
+        Node<Integer> node;
         Integer degreeIndex = 0;
-        Integer node;
+
         List<Integer> neighbours;
-        Integer currentNeighbour;
+
+        Node<Integer> currentNeighbour;
+        Integer currentNeighbourIndex;
+
         Boolean goBack;
         Double currentDensity;
+
         while(degreeIndex < nodesSortedByDegree.size() && currentNumberOfNodes > 0){
             // Check if graph is complete, if yes stop else:
-            if(bestGraph.getDensity() == bestGraph.numberOfNodes * (bestGraph.numberOfNodes - 1) * 0.5)
+            if(bestGraph.getDensity() == ((bestGraph.numberOfNodes - 1.) / 2))
                 break;
             // select in node degree list and add it to set
-            if(nodesSortedByDegree.get(degreeIndex).size() > 0) {
-                node = nodesSortedByDegree.get(degreeIndex).get(0);
-                nodesSortedByDegree.get(degreeIndex).remove(0);
+            if(!nodesSortedByDegree.get(degreeIndex).isEmpty()) {
+                node = nodesSortedByDegree.get(degreeIndex).getHead();
+                nodesSortedByDegree.get(degreeIndex).remove(node);
                 --currentNumberOfNodes;
 
                 // Search for neighbours
-                neighbours = allEdges.get(node);
-                degreeOfEachNode[node] = 0;
+                neighbours = allEdges.get(node.value);
+                degreeOfEachNode[node.value] = 0;
                 // -- degree of each neighbour : remove from its position in degree and put it in the one before
                 // edge cases : if no more edges left for neighbour : remove it too (i.e. if we're in index 0)
                 goBack = false;
                 for (int i = 0; i < neighbours.size() && !goBack; ++i) {
-                    currentNeighbour = neighbours.get(i);
-                    if (degreeOfEachNode[currentNeighbour] > 0) {
-                        nodesSortedByDegree.get(degreeOfEachNode[currentNeighbour]).remove(currentNeighbour);
-                        --degreeOfEachNode[currentNeighbour];
+                    currentNeighbour = addressOfEachNode.get(neighbours.get(i));
+                    currentNeighbourIndex = currentNeighbour.value;
+                    if (degreeOfEachNode[currentNeighbourIndex] > 0) {
+                        nodesSortedByDegree.get(degreeOfEachNode[currentNeighbourIndex]).remove(currentNeighbour);
+                        --degreeOfEachNode[currentNeighbourIndex];
                         --currentNumberOfEdges;
-                        if (degreeOfEachNode[currentNeighbour] > 0) {
-                            nodesSortedByDegree.get(degreeOfEachNode[currentNeighbour]).add(currentNeighbour);
-                            if (degreeOfEachNode[currentNeighbour] < degreeIndex - 1)
+                        if (degreeOfEachNode[currentNeighbourIndex] > 0) {
+                            nodesSortedByDegree.get(degreeOfEachNode[currentNeighbourIndex]).add(currentNeighbour);
+                            if (degreeOfEachNode[currentNeighbourIndex] < degreeIndex - 1)
                                 goBack = true;
                         }
                     }
                 }
                 if (goBack)
                     --degreeIndex;
-                else if (! (nodesSortedByDegree.get(degreeIndex).size() > 0))
+                else if (!nodesSortedByDegree.get(degreeIndex).isEmpty())
                     ++degreeIndex;
             }else{
                 ++degreeIndex;

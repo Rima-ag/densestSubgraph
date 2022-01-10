@@ -23,13 +23,23 @@ public class DoubleLinkedList<T>{
     }
 
     public void remove(Node<T> node){
-        if(head == node)
+        if(head == node) {
+            tail = head.next == null ? null : tail;
             head = head.next == null ? null : head.next;
+        }
         else if(tail == node)
             tail = node.prev;
         else
             node.prev.next = node.next;
 
+    }
+
+    public Node<T> getHead(){
+        return head;
+    }
+
+    public Boolean isEmpty(){
+        return head == null;
     }
 }
 
