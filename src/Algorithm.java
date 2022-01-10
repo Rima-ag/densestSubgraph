@@ -2,30 +2,37 @@ import java.util.*;
 
 public class Algorithm {
     public Graph bestGraph;
-    public List<List<Integer>> nodesSortedByDegree;
-    public Integer[] degreeOfEachNode;
     public List<List<Integer>> allEdges;
     public Integer currentNumberOfNodes;
     public Integer currentNumberOfEdges;
 
+    public List<DoubleLinkedList<Integer>> nodesSortedByDegree;
+    public Integer[] degreeOfEachNode;
+    public ArrayList<Node<Integer>> addressOfEachNode;
 
     Algorithm(String filename){
         try {
-            this.bestGraph = new Graph(filename);
-            this.nodesSortedByDegree = new ArrayList<>();
-            this.degreeOfEachNode = new Integer[bestGraph.numberOfNodes];
-
-            for(int i = 0; i < bestGraph.numberOfNodes + 2; ++i)
-                nodesSortedByDegree.add(new LinkedList<>());
-
-            for(int i = 0; i < bestGraph.numberOfNodes; ++i) {
-                degreeOfEachNode[i] = bestGraph.neighbours.get(i).size();
-                nodesSortedByDegree.get(degreeOfEachNode[i]).add(i);
-            }
-
+            bestGraph = new Graph(filename);
             allEdges = bestGraph.neighbours;
             currentNumberOfEdges = bestGraph.numberOfEdges;
             currentNumberOfNodes = bestGraph.numberOfNodes;
+
+            nodesSortedByDegree = new ArrayList<>();
+            degreeOfEachNode = new Integer[currentNumberOfNodes];
+            addressOfEachNode = new ArrayList<>(currentNumberOfNodes);
+
+            for(int i = 0; i < currentNumberOfNodes + 1; ++i)
+                nodesSortedByDegree.add(new DoubleLinkedList<>());
+
+            for(int i = 0; i < currentNumberOfNodes + 1; ++i)
+                addressOfEachNode.add(new Node<>(null, null, i));
+
+            for(int i = 0; i < currentNumberOfNodes; ++i) {
+                degreeOfEachNode[i] = allEdges.get(i).size();
+                nodesSortedByDegree.get(degreeOfEachNode[i]).add(addressOfEachNode.get(i));
+            }
+
+
         }catch(Exception e){
             System.out.println("Exception occurred while creating graph");
         }
