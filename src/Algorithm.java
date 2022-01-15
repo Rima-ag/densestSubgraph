@@ -2,7 +2,10 @@ import java.util.*;
 
 public class Algorithm {
     public Graph bestGraph;
-    public List<List<Integer>> allEdges;
+
+    public List<DoubleLinkedList<Integer>> allEdges;
+    public List<DoubleLinkedList<Integer>> currentNeighbourNodes;
+
     public Integer currentNumberOfNodes;
     public Integer currentNumberOfEdges;
 
@@ -13,10 +16,13 @@ public class Algorithm {
     Algorithm(String filename, String delimiter){
         try {
             bestGraph = new Graph(filename, delimiter);
-            allEdges = bestGraph.neighbours;
+
+            allEdges = bestGraph.allNeighbourNodes;
+            currentNeighbourNodes = bestGraph.neighbours;
+
             currentNumberOfEdges = bestGraph.numberOfEdges;
             currentNumberOfNodes = bestGraph.numberOfNodes;
-            System.out.println(currentNumberOfNodes);
+
             nodesSortedByDegree = new ArrayList<>();
             degreeOfEachNode = new Integer[currentNumberOfNodes];
             addressOfEachNode = new ArrayList<>(currentNumberOfNodes);
@@ -25,7 +31,7 @@ public class Algorithm {
                 nodesSortedByDegree.add(new DoubleLinkedList<>());
 
             for(int i = 0; i < currentNumberOfNodes + 1; ++i)
-                addressOfEachNode.add(new Node<>(null, null, i));
+                addressOfEachNode.add(new Node<>(i, null, null, null));
 
             for(int i = 0; i < currentNumberOfNodes; ++i) {
                 degreeOfEachNode[i] = allEdges.get(i).size();
@@ -39,13 +45,19 @@ public class Algorithm {
     }
 
     public Graph run(){
-        Node<Integer> node;
+        LinkedList<Integer> permanentlyRemoved = new LinkedList<>();
+        LinkedList<Integer> tmpRemoved = new LinkedList<>();
+
+        Node<Integer> minDegreeNode;
         Integer degreeIndex = 0;
 
-        List<Integer> neighbours;
+        //Neighbours of min degree node
+        DoubleLinkedList<Integer> neighbours;
 
-        Node<Integer> currentNeighbour;
-        Integer currentNeighbourIndex;
+        Node<Integer> neighbour;
+        Integer neighbourIndex;
+        Node<Integer> neighbourInDegreeList;
+
 
         Boolean goBack;
         Double currentDensity;
@@ -56,30 +68,38 @@ public class Algorithm {
                 break;
             // select in node degree list and add it to set
             if(!nodesSortedByDegree.get(degreeIndex).isEmpty()) {
-                node = nodesSortedByDegree.get(degreeIndex).getHead();
-                nodesSortedByDegree.get(degreeIndex).remove(node);
-                --currentNumberOfNodes;
+                minDegreeNode = nodesSortedByDegree.get(degreeIndex).popFirst();
+                tmpRemoved.add(minDegreeNode.value);
 
                 // Search for neighbours
-                neighbours = allEdges.get(node.value);
-                degreeOfEachNode[node.value] = 0;
+                neighbours = currentNeighbourNodes.get(minDegreeNode.value);
+
+                --currentNumberOfNodes;
+                degreeOfEachNode[minDegreeNode.value] = 0;
                 // -- degree of each neighbour : remove from its position in degree and put it in the one before
                 // edge cases : if no more edges left for neighbour : remove it too (i.e. if we're in index 0)
                 goBack = false;
-                for (int i = 0; i < neighbours.size() && !goBack; ++i) {
-                    currentNeighbour = addressOfEachNode.get(neighbours.get(i));
-                    currentNeighbourIndex = currentNeighbour.value;
-                    if (degreeOfEachNode[currentNeighbourIndex] > 0) {
-                        nodesSortedByDegree.get(degreeOfEachNode[currentNeighbourIndex]).remove(currentNeighbour);
-                        --degreeOfEachNode[currentNeighbourIndex];
+                while(!neighbours.isEmpty() && !goBack){
+                    //Removing edge from edge list
+                    neighbour = neighbours.popFirst();
+                    currentNeighbourNodes.get(neighbour.relative.value).remove(neighbour.relative);
+
+
+                    neighbourIndex = neighbour.value;
+                    neighbourInDegreeList = addressOfEachNode.get(neighbourIndex);
+
+                    if (degreeOfEachNode[neighbourIndex] > 0) {
+                        nodesSortedByDegree.get(degreeOfEachNode[neighbourIndex]).remove(neighbourInDegreeList);
+                        --degreeOfEachNode[neighbourIndex];
                         --currentNumberOfEdges;
-                        if (degreeOfEachNode[currentNeighbourIndex] > 0) {
-                            nodesSortedByDegree.get(degreeOfEachNode[currentNeighbourIndex]).add(currentNeighbour);
-                            if (degreeOfEachNode[currentNeighbourIndex] < degreeIndex - 1)
+                        if (degreeOfEachNode[neighbourIndex] > 0) {
+                            nodesSortedByDegree.get(degreeOfEachNode[neighbourIndex]).add(neighbourInDegreeList);
+                            if (degreeOfEachNode[neighbourIndex] < degreeIndex)
                                 goBack = true;
                         }
                     }
                 }
+
                 if (goBack)
                     --degreeIndex;
                 else if (!nodesSortedByDegree.get(degreeIndex).isEmpty())
@@ -92,9 +112,22 @@ public class Algorithm {
             // compare densities and update
             if(currentDensity > bestGraph.getDensity()){
                 bestGraph = new Graph(currentNumberOfNodes, currentNumberOfEdges,
-                        bestGraph.neighbours, degreeOfEachNode);
+                        allEdges, currentNeighbourNodes, degreeOfEachNode);
+                permanentlyRemoved.append(tmpRemoved);
+                tmpRemoved.clear();
             }
         }
+
+        while(!permanentlyRemoved.isEmpty()){
+            minDegreeNode = permanentlyRemoved.popFirst();
+            neighbours = allEdges.get(minDegreeNode.value);
+            while(!neighbours.isEmpty()) {
+                neighbour = neighbours.popFirst();
+                allEdges.get(neighbour.relative.value).remove(neighbour.relative);
+            }
+        }
+
+
         return bestGraph;
     }
 

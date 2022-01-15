@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
-    public List<List<Integer>> neighbours;
+    public List<DoubleLinkedList<Integer>> allNeighbourNodes;
+    public List<DoubleLinkedList<Integer>> neighbours;
     public Integer numberOfEdges;
     public Integer numberOfNodes;
-    private Double density;
+    final private Double density;
     public Integer[] degreeOfEachNode;
 
-    Graph(Integer numberOfNodes, Integer numberOfEdges, List<List<Integer>> neighbours, Integer[] degreeOfEachNode){
+    Graph(Integer numberOfNodes, Integer numberOfEdges, List<DoubleLinkedList<Integer>> allNeighbourNodes,
+          List<DoubleLinkedList<Integer>> neighbours, Integer[] degreeOfEachNode){
         this.numberOfNodes = numberOfNodes;
         this.numberOfEdges = numberOfEdges;
+        this.allNeighbourNodes = allNeighbourNodes;
         this.neighbours = neighbours;
         this.density = computeDensity(numberOfEdges, numberOfNodes);
         copyDegreeOfEachNode(degreeOfEachNode);
@@ -32,22 +35,30 @@ public class Graph {
             numberOfEdges = metaData[1];
         }
 
-        List<List<Integer>> neighbours = new ArrayList<>();
-        for(int i = 0; i < numberOfNodes; ++i)
-            neighbours.add(new ArrayList<>());
+        List<DoubleLinkedList<Integer>> neighbours = new ArrayList<>();
+        List<DoubleLinkedList<Integer>> copyNeighbours = new ArrayList<>();
+        for(int i = 0; i < numberOfNodes; ++i) {
+            neighbours.add(new DoubleLinkedList<>());
+            copyNeighbours.add(new DoubleLinkedList<>());
+        }
+
 
         while ((line = br.readLine()) != null){
             Integer[] pair = convertLineToInteger(line.split(delimiter));
             if(pair.length == 2) {
-                neighbours.get(pair[0]).add(pair[1]);
-                neighbours.get(pair[1]).add(pair[0]);
+                fillNeighbours(pair, neighbours);
+                fillNeighbours(pair, copyNeighbours);
+            }else{
+                System.out.println("Wrong delimiter");
+                break;
             }
         }
 
         this.numberOfEdges = numberOfEdges;
         this.numberOfNodes = numberOfNodes;
         this.density = computeDensity(numberOfEdges, numberOfNodes);
-        this.neighbours = neighbours;
+        this.allNeighbourNodes = neighbours;
+        this.neighbours = copyNeighbours;
         initDegreeOfEachNode();
     }
 
@@ -59,9 +70,9 @@ public class Graph {
     }
 
     private void initDegreeOfEachNode(){
-        degreeOfEachNode = new Integer[numberOfNodes];
-        for(int i = 0; i < neighbours.size(); ++i)
-            degreeOfEachNode[i] = neighbours.get(i).size();
+        degreeOfEachNode = new Integer[allNeighbourNodes.size()];
+        for(int i = 0; i < allNeighbourNodes.size(); ++i)
+            degreeOfEachNode[i] = allNeighbourNodes.get(i).size();
 
     }
 
@@ -76,5 +87,18 @@ public class Graph {
     }
 
     public Double getDensity(){return density;}
+
+    private void fillNeighbours(Integer[] pair, List<DoubleLinkedList<Integer>> list){
+        Node<Integer> first;
+        Node<Integer> second;
+
+        first = new Node<>(pair[1], null, null, null);
+        second = new Node<>(pair[0], null, null, null);
+        first.relative = second;
+        second.relative = first;
+
+        list.get(pair[0]).add(first);
+        list.get(pair[1]).add(second);
+    }
 
 }
