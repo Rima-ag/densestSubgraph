@@ -56,14 +56,14 @@ public class Algorithm {
 
         Node<Integer> neighbour;
         Integer neighbourIndex;
-        Node<Integer> neighbourInDegreeList;
+        Node<Integer> neighbourInSortedDegreeList;
 
 
-        Boolean goBack;
+        Boolean goBack = false;
         Double currentDensity;
 
         while(degreeIndex < nodesSortedByDegree.size() && currentNumberOfNodes > 0){
-            // Check if graph is complete, if yes stop else:
+            // Check if graph is complete, if yes stop
             if(bestGraph.getDensity() == ((bestGraph.numberOfNodes - 1.) / 2))
                 break;
             // select in node degree list and add it to set
@@ -75,47 +75,47 @@ public class Algorithm {
                 neighbours = currentNeighbourNodes.get(minDegreeNode.value);
 
                 --currentNumberOfNodes;
-                degreeOfEachNode[minDegreeNode.value] = 0;
                 // -- degree of each neighbour : remove from its position in degree and put it in the one before
                 // edge cases : if no more edges left for neighbour : remove it too (i.e. if we're in index 0)
                 goBack = false;
-                while(!neighbours.isEmpty() && !goBack){
+                while (!neighbours.isEmpty()) {
                     //Removing edge from edge list
                     neighbour = neighbours.popFirst();
-                    currentNeighbourNodes.get(neighbour.relative.value).remove(neighbour.relative);
 
+                    --currentNumberOfEdges;
 
                     neighbourIndex = neighbour.value;
-                    neighbourInDegreeList = addressOfEachNode.get(neighbourIndex);
+                    neighbourInSortedDegreeList = addressOfEachNode.get(neighbourIndex);
 
-                    if (degreeOfEachNode[neighbourIndex] > 0) {
-                        nodesSortedByDegree.get(degreeOfEachNode[neighbourIndex]).remove(neighbourInDegreeList);
-                        --degreeOfEachNode[neighbourIndex];
-                        --currentNumberOfEdges;
-                        if (degreeOfEachNode[neighbourIndex] > 0) {
-                            nodesSortedByDegree.get(degreeOfEachNode[neighbourIndex]).add(neighbourInDegreeList);
-                            if (degreeOfEachNode[neighbourIndex] < degreeIndex)
-                                goBack = true;
-                        }
+
+                    nodesSortedByDegree.get(currentNeighbourNodes.get(neighbourIndex).size())
+                            .remove(neighbourInSortedDegreeList);
+                    currentNeighbourNodes.get(neighbourIndex).remove(neighbour.relative);
+
+                    if (currentNeighbourNodes.get(neighbourIndex).size() > 0) {
+                        nodesSortedByDegree.get(currentNeighbourNodes.get(neighbourIndex).size())
+                                .add(neighbourInSortedDegreeList);
+                        if (currentNeighbourNodes.get(neighbourIndex).size() < degreeIndex)
+                            goBack = true;
                     }
-                }
 
-                if (goBack)
-                    --degreeIndex;
-                else if (!nodesSortedByDegree.get(degreeIndex).isEmpty())
-                    ++degreeIndex;
-            }else{
-                ++degreeIndex;
+                }
             }
+            if (goBack)
+                --degreeIndex;
+            else if (nodesSortedByDegree.get(degreeIndex).isEmpty())
+                ++degreeIndex;
+
 
             currentDensity = new Double(currentNumberOfEdges) / currentNumberOfNodes;
             // compare densities and update
-            if(currentDensity > bestGraph.getDensity()){
+            if (currentDensity > bestGraph.getDensity()) {
                 bestGraph = new Graph(currentNumberOfNodes, currentNumberOfEdges,
                         allEdges, currentNeighbourNodes, degreeOfEachNode);
                 permanentlyRemoved.append(tmpRemoved);
                 tmpRemoved.clear();
             }
+
         }
 
         while(!permanentlyRemoved.isEmpty()){
