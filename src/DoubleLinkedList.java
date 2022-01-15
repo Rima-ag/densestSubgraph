@@ -11,15 +11,14 @@ public class DoubleLinkedList<T> implements MyList<T>{
     }
 
     public void add(Node<T> newNode){
+        newNode.next = null;
         if(head == null){
+            newNode.prev = null;
             head = newNode;
-            head.prev = null;
-            head.next = null;
             tail = head;
         }else{
             tail.next = newNode;
             newNode.prev = tail;
-            newNode.next = null;
             tail = tail.next;
         }
         ++size;
@@ -31,20 +30,28 @@ public class DoubleLinkedList<T> implements MyList<T>{
                 head = head.next;
                 if (head == null)
                     tail = null;
-            } else if (tail == node)
+                else
+                    head.prev = null;
+            } else if (tail == node) {
                 tail = node.prev;
-            else
+                tail.next = null;
+            }
+            else {
                 node.prev.next = node.next;
+                node.next.prev = node.prev;
+            }
 
             --size;
         }
     }
 
-    public void removeFirst(){
+    private void removeFirst(){
         if(size() > 0){
             head = head.next;
             if(head == null)
                 tail = null;
+            else
+                head.prev = null;
             --size;
         }
     }

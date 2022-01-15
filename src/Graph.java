@@ -10,16 +10,14 @@ public class Graph {
     public Integer numberOfEdges;
     public Integer numberOfNodes;
     final private Double density;
-    public Integer[] degreeOfEachNode;
 
     Graph(Integer numberOfNodes, Integer numberOfEdges, List<DoubleLinkedList<Integer>> allNeighbourNodes,
-          List<DoubleLinkedList<Integer>> neighbours, Integer[] degreeOfEachNode){
+          List<DoubleLinkedList<Integer>> neighbours){
         this.numberOfNodes = numberOfNodes;
         this.numberOfEdges = numberOfEdges;
         this.allNeighbourNodes = allNeighbourNodes;
         this.neighbours = neighbours;
         this.density = computeDensity(numberOfEdges, numberOfNodes);
-        copyDegreeOfEachNode(degreeOfEachNode);
     }
 
     Graph(String filePath, String delimiter) throws IOException{
@@ -59,7 +57,6 @@ public class Graph {
         this.density = computeDensity(numberOfEdges, numberOfNodes);
         this.allNeighbourNodes = neighbours;
         this.neighbours = copyNeighbours;
-        initDegreeOfEachNode();
     }
 
     private Integer[] convertLineToInteger(String[] line){
@@ -67,19 +64,6 @@ public class Graph {
         for(int i = 0; i < line.length; ++i)
             pair[i] = Integer.parseInt(line[i]);
         return pair;
-    }
-
-    private void initDegreeOfEachNode(){
-        degreeOfEachNode = new Integer[allNeighbourNodes.size()];
-        for(int i = 0; i < allNeighbourNodes.size(); ++i)
-            degreeOfEachNode[i] = allNeighbourNodes.get(i).size();
-
-    }
-
-    private void copyDegreeOfEachNode(Integer[] previous){
-        degreeOfEachNode = new Integer[previous.length];
-        for(int i = 0; i < previous.length; ++i)
-            degreeOfEachNode[i] = previous[i];
     }
 
     private Double computeDensity(Integer numberOfEdges, Integer numberOfNodes){

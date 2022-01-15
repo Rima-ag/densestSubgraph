@@ -10,7 +10,6 @@ public class Algorithm {
     public Integer currentNumberOfEdges;
 
     public List<DoubleLinkedList<Integer>> nodesSortedByDegree;
-    public Integer[] degreeOfEachNode;
     public ArrayList<Node<Integer>> addressOfEachNode;
 
     Algorithm(String filename, String delimiter){
@@ -24,7 +23,6 @@ public class Algorithm {
             currentNumberOfNodes = bestGraph.numberOfNodes;
 
             nodesSortedByDegree = new ArrayList<>();
-            degreeOfEachNode = new Integer[currentNumberOfNodes];
             addressOfEachNode = new ArrayList<>(currentNumberOfNodes);
 
             for(int i = 0; i < currentNumberOfNodes + 1; ++i)
@@ -33,10 +31,8 @@ public class Algorithm {
             for(int i = 0; i < currentNumberOfNodes + 1; ++i)
                 addressOfEachNode.add(new Node<>(i, null, null, null));
 
-            for(int i = 0; i < currentNumberOfNodes; ++i) {
-                degreeOfEachNode[i] = allEdges.get(i).size();
-                nodesSortedByDegree.get(degreeOfEachNode[i]).add(addressOfEachNode.get(i));
-            }
+            for(int i = 0; i < currentNumberOfNodes; ++i)
+                nodesSortedByDegree.get(allEdges.get(i).size()).add(addressOfEachNode.get(i));
 
 
         }catch(Exception e){
@@ -59,13 +55,14 @@ public class Algorithm {
         Node<Integer> neighbourInSortedDegreeList;
 
 
-        Boolean goBack = false;
-        Double currentDensity;
+        boolean goBack = false;
+        double currentDensity;
 
         while(degreeIndex < nodesSortedByDegree.size() && currentNumberOfNodes > 0){
             // Check if graph is complete, if yes stop
             if(bestGraph.getDensity() == ((bestGraph.numberOfNodes - 1.) / 2))
                 break;
+
             // select in node degree list and add it to set
             if(!nodesSortedByDegree.get(degreeIndex).isEmpty()) {
                 minDegreeNode = nodesSortedByDegree.get(degreeIndex).popFirst();
@@ -110,8 +107,7 @@ public class Algorithm {
             currentDensity = new Double(currentNumberOfEdges) / currentNumberOfNodes;
             // compare densities and update
             if (currentDensity > bestGraph.getDensity()) {
-                bestGraph = new Graph(currentNumberOfNodes, currentNumberOfEdges,
-                        allEdges, currentNeighbourNodes, degreeOfEachNode);
+                bestGraph = new Graph(currentNumberOfNodes, currentNumberOfEdges, allEdges, currentNeighbourNodes);
                 permanentlyRemoved.append(tmpRemoved);
                 tmpRemoved.clear();
             }
@@ -135,12 +131,6 @@ public class Algorithm {
         Algorithm algo = new Algorithm("large_twitch_edges.csv", ",");
         Graph bestGraph = algo.run();
         System.out.println(bestGraph.getDensity());
-        Integer nodes = 0;
-        for(int i = 0; i < bestGraph.degreeOfEachNode.length; ++i){
-            if(bestGraph.degreeOfEachNode[i] != 0)
-                ++nodes;
-        }
-        System.out.println(nodes);
     }
 
 }
