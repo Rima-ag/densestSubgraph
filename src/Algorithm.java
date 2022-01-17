@@ -119,7 +119,7 @@ public class Algorithm {
             neighbours = allEdges.get(minDegreeNode.value);
             while(!neighbours.isEmpty()) {
                 neighbour = neighbours.popFirst();
-                allEdges.get(neighbour.relative.value).remove(neighbour.relative);
+                allEdges.get(neighbour.value).remove(neighbour.relative);
             }
         }
 
@@ -128,7 +128,7 @@ public class Algorithm {
     }
 
     public static void main(String[] args) {
-        Algorithm algo = new Algorithm("large_twitch_edges.csv", ",");
+        Algorithm algo = new Algorithm("HU_edges.csv", ",");
         Graph bestGraph = algo.run();
         System.out.println(bestGraph.getDensity());
     }
