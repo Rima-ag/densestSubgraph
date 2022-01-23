@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class Algorithm {
@@ -25,10 +27,10 @@ public class Algorithm {
             nodesSortedByDegree = new ArrayList<>();
             addressOfEachNode = new ArrayList<>(currentNumberOfNodes);
 
-            for(int i = 0; i < currentNumberOfNodes + 1; ++i)
+            for(int i = 0; i < currentNumberOfNodes; ++i)
                 nodesSortedByDegree.add(new DoubleLinkedList<>());
 
-            for(int i = 0; i < currentNumberOfNodes + 1; ++i)
+            for(int i = 0; i < currentNumberOfNodes; ++i)
                 addressOfEachNode.add(new Node<>(i, null, null, null));
 
             for(int i = 0; i < currentNumberOfNodes; ++i)
@@ -128,9 +130,24 @@ public class Algorithm {
     }
 
     public static void main(String[] args) {
-        Algorithm algo = new Algorithm("HU_edges.csv", ",");
-        Graph bestGraph = algo.run();
-        System.out.println(bestGraph.getDensity());
+        List<Pair<String, String>> input = new ArrayList<>();
+        input.add(new Pair<>("HU_edges.csv", ","));
+        input.add(new Pair<>("HR_edges.csv", ","));
+        input.add(new Pair<>("com-amazon.ungraph.txt", "\t"));
+        input.add(new Pair<>("com-youtube.ungraph.txt", "\t"));
+        input.add(new Pair<>("large_twitch_edges.csv", ","));
+
+        for(int i = 0; i < input.size(); ++i){
+            long startTime = System.nanoTime();
+            Algorithm algo = new Algorithm(input.get(i).getKey(), input.get(i).getValue());
+            Graph bestGraph = algo.run();
+            long endTime = System.nanoTime();
+            System.out.print(input.get(i).getKey() + " density: " + bestGraph.getDensity() +
+                    " number of nodes : " + bestGraph.numberOfNodes + " ");
+
+            long duration = (endTime - startTime);
+            System.out.println("duration: " + duration / 1000000);
+        }
     }
 
 }
