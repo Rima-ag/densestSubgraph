@@ -1,46 +1,84 @@
-public class DoubleLinkedList<T>{
+public class DoubleLinkedList<T> implements MyList<T>{
 
-    Node<T> head;
-    Node<T> tail;
+    private Node<T> head;
+    private Node<T> tail;
+    private Integer size;
 
     public DoubleLinkedList(){
         head = null;
         tail = null;
+        size = 0;
     }
 
     public void add(Node<T> newNode){
+        newNode.next = null;
         if(head == null){
+            newNode.prev = null;
             head = newNode;
-            head.prev = null;
-            head.next = null;
             tail = head;
         }else{
             tail.next = newNode;
             newNode.prev = tail;
-            newNode.next = null;
             tail = tail.next;
         }
+        ++size;
     }
 
     public void remove(Node<T> node){
-        if(head == node) {
-            tail = head.next == null ? null : tail;
-            head = head.next == null ? null : head.next;
-        }
-        else if(tail == node)
-            tail = node.prev;
-        else
-            node.prev.next = node.next;
+        if(size() > 0) {
+            if (head == node) {
+                head = head.next;
+                if (head == null)
+                    tail = null;
+                else
+                    head.prev = null;
+            } else if (tail == node) {
+                tail = node.prev;
+                tail.next = null;
+            }
+            else {
+                node.prev.next = node.next;
+                node.next.prev = node.prev;
+            }
 
+            --size;
+        }
     }
+
+    private void removeFirst(){
+        if(size() > 0){
+            head = head.next;
+            if(head == null)
+                tail = null;
+            else
+                head.prev = null;
+            --size;
+        }
+    }
+
 
     public Node<T> getHead(){
         return head;
     }
 
-    public Boolean isEmpty(){
-        return head == null;
+    public Node<T> getTail(){
+        return tail;
     }
+
+    public Node<T> popFirst(){
+        if(size() > 0) {
+            Node<T> node = getHead();
+            removeFirst();
+            return node;
+        }
+        return null;
+    }
+
+    public Boolean isEmpty(){
+        return size() <= 0;
+    }
+
+    public Integer size(){return size;}
 }
 
 
