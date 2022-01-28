@@ -5,8 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
+    /**
+     * Contains every single edge from the initial graph
+     */
     public List<DoubleLinkedList<Integer>> allNeighbourNodes;
+    /**
+     * List of current neighbours of the graph
+     */
     public List<DoubleLinkedList<Integer>> neighbours;
+
     public Integer numberOfEdges;
     public Integer numberOfNodes;
     final private Double density;
@@ -20,6 +27,12 @@ public class Graph {
         this.density = computeDensity(numberOfEdges, numberOfNodes);
     }
 
+    /**
+     * Initializes graph from file
+     * @param filePath
+     * @param delimiter
+     * @throws IOException
+     */
     Graph(String filePath, String delimiter) throws IOException{
         Integer numberOfEdges = 0;
         Integer numberOfNodes = 0;
@@ -33,6 +46,7 @@ public class Graph {
             numberOfEdges = metaData[1];
         }
 
+        //Init neighbours list
         List<DoubleLinkedList<Integer>> neighbours = new ArrayList<>();
         List<DoubleLinkedList<Integer>> copyNeighbours = new ArrayList<>();
         for(int i = 0; i < numberOfNodes; ++i) {
@@ -59,6 +73,11 @@ public class Graph {
         this.neighbours = copyNeighbours;
     }
 
+    /**
+     * Converts an array of strings to a list of integers
+     * @param line
+     * @return
+     */
     private Integer[] convertLineToInteger(String[] line){
         Integer[] pair = new Integer[line.length];
         for(int i = 0; i < line.length; ++i)
@@ -66,12 +85,28 @@ public class Graph {
         return pair;
     }
 
+    /**
+     * Computes density of a graph
+     * @param numberOfEdges
+     * @param numberOfNodes
+     * @return
+     */
     private Double computeDensity(Integer numberOfEdges, Integer numberOfNodes){
         return new Double(numberOfEdges) / numberOfNodes;
     }
 
+    /**
+     * Returns density of a graph
+     * @return
+     */
     public Double getDensity(){return density;}
 
+    /**
+     * Given an edge represented as an array of integers, it creates nodes and adds them to a neighbour list
+     * and links them to each other for easier lookup
+     * @param pair
+     * @param list
+     */
     private void fillNeighbours(Integer[] pair, List<DoubleLinkedList<Integer>> list){
         Node<Integer> first;
         Node<Integer> second;
